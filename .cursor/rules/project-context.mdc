@@ -1,31 +1,40 @@
 ---
-description: Contexto e convenções gerais do projeto XploreDS
+description: Contexto e convenções gerais do projeto XploreDev
 alwaysApply: true
 ---
 
-# XploreDS
+# XploreDev
 
-Biblioteca e cookbook de Data Science em Python.
+Biblioteca Python publicável (**`xploredev`** no PyPI) e **cookbook** para experimentos em engenharia de software.
 
 ## Estrutura do repositório
 
-- `src/xploreds/` — biblioteca publicável (PyPI), instalada em modo editável via `uv sync`
-- `cookbook/` — scripts e receitas locais (não publica)
-- `tests/` — pytest espelhando módulos de `src/xploreds/`
-- `data/` — datasets locais (não versionar dados sensíveis ou grandes)
-- `references/` — material de estudo externo (somente leitura; não editar)
-- `static/` — assets estáticos (figuras, templates)
-- `docs/` — documentação técnica do projeto
+- `src/xploredev/` — biblioteca instalada em modo editável via `uv sync`; módulos de produção com prefixo **`xdv_`** por domínio (`io`, `log`, `utils`, `environment`, `lists`, …)
+- `cookbook/` — scripts e notebooks locais (não entram no pacote PyPI)
+- `tests/` — **pytest** espelhando `src/xploredev/` (`uv run pytest`)
+- `data/` — datasets locais (`raw/`, `stage/`, `prod/`); não versionar dados sensíveis ou grandes
+- `references/` — material de estudo externo (somente leitura; **não editar**)
+- `docs/` — documentação do projeto
+- `guides/`, `notes/` — anotações locais (fora do pacote)
+
+Artefatos de build em `dist/` (gerados por `uv build`, normalmente não versionados).
 
 ## Ferramentas
 
-- **uv** para dependências e ambientes — nunca sugerir `pip install` ou `requirements.txt`
-- Configuração em `pyproject.toml` + build com **hatchling** (`uv build` / `uv publish`)
-- **Commitizen** para versionamento semântico (`cz commit`, `cz bump`)
+- **uv** — dependências, ambientes, build e publish; não sugerir `pip install` nem `requirements.txt` na raiz deste repo
+- Configuração em **`pyproject.toml`** + **`uv.lock`**; build-backend **`uv_build`** (`uv build`, `uv publish`)
+- **Commitizen** — commits (`uv run cz commit`) e releases (`uv run cz bump` → versão, `CHANGELOG.md`, tag)
+- **nbstripout** — filtro Git (`.gitattributes`); por clone: `uv run nbstripout --install --attributes .gitattributes`; notebooks versionados **sem outputs**
+- **pytest** — dependência do projeto; executar com `uv run pytest`
+
+## Ambiente e segredos
+
+- Python **3.12** (`requires-python` em `pyproject.toml`; `.python-version`)
+- Segredos locais em **`.env`** (gitignored); modelo em `.env.example` (ex.: `UV_PUBLISH_TOKEN` para `uv run --env-file .env --no-project -- uv publish`)
 
 ## Princípios
 
-- Código de produção em `.py`; exploração em `.ipynb`
+- Código de produção em `.py` em `src/xploredev/`; exploração em `.ipynb` no `cookbook/`
 - Minimizar escopo das mudanças; não alterar `references/`
 - Preferir funções puras e pipelines reproduzíveis
 - Documentar premissas de dados e metodologia

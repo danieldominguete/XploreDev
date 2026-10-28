@@ -1,55 +1,61 @@
 ---
-description: Padrões Python para o projeto XploreDS
+description: Padrões Python para o projeto XploreDev
 globs: **/*.py
 alwaysApply: false
 ---
 
-# Python — XploreDS
+# Python — XploreDev
 
 ## Estrutura
 
-- Pacote em `src/xploreds/`; cookbook em `cookbook/`
-- Testes em `tests/` espelhando a árvore de `src/xploreds/`
-- Configuração central em `pyproject.toml` (uv)
+- Biblioteca em **`src/xploredev/`**; receitas em **`cookbook/`** (fora do pacote PyPI)
+- Módulos de produção: **`xdv_<domínio>.py`** por pacote (`io`, `log`, `utils`, `environment`, `lists`, …); import público `from xploredev.<pacote> import ...`
+- Testes em **`tests/`** espelhando `src/xploredev/` — `uv run pytest`
+- Configuração em **`pyproject.toml`** + **`uv.lock`** (uv); Python **3.12**
+
+## Escopo das regras
+
+- **`src/xploredev/`** — contrato completo (tipos, docstrings, logging, testes)
+- **`cookbook/`** — scripts/notebooks de experimento; reutilizar a biblioteca quando possível
 
 ## Estilo
 
-- PEP 8 + Black (88 caracteres, aspas duplas)
-- `snake_case` para funções/variáveis; `PascalCase` para classes
-- Imports: stdlib → third-party → local (isort)
-- Preferir `pathlib.Path` a strings de caminho
+- PEP 8; linhas ~88 caracteres quando fizer sentido; aspas duplas
+- `snake_case` funções/variáveis; `PascalCase` classes
+- Imports: stdlib → third-party → `xploredev` (agrupamento isort quando houver formatter)
+- Preferir **`pathlib.Path`** a strings de caminho
 
 ## Type hints
 
-- Anotar parâmetros e retornos em funções públicas
-- `Optional[T]` para compatibilidade; `collections.abc` para interfaces
-- `dataclasses` ou Pydantic para estruturas de dados
+- Anotar parâmetros e retorno em funções públicas da biblioteca
+- Preferir **`int | float`**, **`str | None`** (3.12); `Optional[T]` só se já for o padrão do arquivo
+- `collections.abc` para sequências/mappings genéricos; `dataclasses` ou Pydantic quando modelar dados estruturados
 
 ## Documentação de funções
 
-Toda função pública em `src/xploreds/` deve ter docstring **Google style** com:
+Toda função **pública** em `src/xploredev/` deve ter docstring **Google style** com:
 
 - Resumo em uma linha
-- `Args` — parâmetros e tipos aceitos
+- `Args` — parâmetros
 - `Returns` — quando aplicável
 - `Raises` — exceções esperadas
-- `Note` ou `Example` — premissas, dependências ou uso não óbvio
+- `Note` ou `Example` — premissas ou uso não óbvio
 
 Funções privadas (`_prefix`) podem ter docstring de uma linha.
 
-Comentários inline (`#`) apenas para lógica não óbvia — preferir docstring para contrato da API.
+Comentários inline (`#`) só para lógica não óbvia — preferir docstring no contrato da API.
 
-Ao criar ou refatorar funções, **sempre** adicionar ou atualizar a docstring.
+Ao criar ou refatorar, **atualizar a docstring**.
 
-Referência de estilo: `src/xploreds/io/xds_file.py`, `src/xploreds/log/xds_log.py`.
+Referência de estilo: `src/xploredev/io/xdv_file.py`, `src/xploredev/log/xdv_log.py`, `src/xploredev/utils/xds_memory.py`.
 
 ```python
 def convert_bytes(size_bytes: int | float, to_unit: str = "GB") -> float:
-    """Convert a byte count to the requested binary unit.
+    """Convert a byte count to the requested binary unit (KiB-based).
 
     Args:
         size_bytes: Size in bytes.
-        to_unit: Target unit (B, KB, MB, GB, or TB).
+        to_unit: Target unit (B, KB, MB, GB, or TB; case-insensitive).
 
     Returns:
         Size expressed in the requested unit.
@@ -62,19 +68,18 @@ def convert_bytes(size_bytes: int | float, to_unit: str = "GB") -> float:
 ## Boas práticas
 
 - Sem `bare except`; capturar exceções específicas
-- `logging` em vez de `print` em código de produção
+- **`logging`** (via `xdv_log` quando fizer sentido) em vez de `print` em `src/xploredev/`
 - Context managers para arquivos e conexões
-- Funções focadas; módulos com menos de 500 linhas
+- Funções focadas; evitar módulos monolíticos (> ~500 linhas)
 
 ## Versionamento
 
-- Usar `cz commit` para commits (Conventional Commits)
-- Usar `cz bump` para releases semânticas (atualiza versão, CHANGELOG e tag)
-- Não commitar com `git commit -m` direto — o hook valida o formato da mensagem
+- Commits: **`uv run cz commit`** (Conventional Commits)
+- Release: **`uv run cz bump`** (versão em `pyproject.toml`, `CHANGELOG.md`, tag)
+- Hook opcional de mensagem: **`uv run cz install --hook-type commit-msg`**
 
 ## Dependências
 
-- Adicionar com `uv add <pacote>`
-- Separar dependências de dev (`uv add --dev pytest ruff mypy`)
-
-
+- Runtime: **`uv add <pacote>`** (atualiza `pyproject.toml` e `uv.lock`)
+- Dev-only: **`uv add --group dev <pacote>`** (ex.: `commitizen` já está em `[dependency-groups].dev`)
+- Não adicionar `requirements.txt` na raiz do projeto

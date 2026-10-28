@@ -1,12 +1,12 @@
 [project]
 name = "xploredev"
 version = "0.2.0"
-description = "Add your description here"
+description = "Library and cookbook codes for Software Engineering Projects"
 readme = "README.md"
 authors = [
-    { name = "Your Name", email = "you@example.com" }
+    { name = "Daniel Dominguete", email = "daniel.dominguete@gmail.com" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "nbstripout>=0.9.1",
     "pandas>=3.1.0",

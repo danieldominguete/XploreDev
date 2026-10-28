@@ -10,6 +10,19 @@ cookbook/          → scripts e notebooks de receitas locais
 references/        → material de estudo
 ```
 
+## Módulos da biblioteca (`src/xploredev/`)
+
+Pacotes por domínio; cada módulo segue o prefixo `xdv_` (Xplore Development).
+
+| Pacote | Arquivo | Responsabilidade |
+|--------|---------|------------------|
+| `io` | `xdv_file.py` | Pastas, JSON e persistência de `pandas` (Parquet, etc.) |
+| `log` | `xdv_log.py` | Logging estruturado e perfil de ambiente em execuções |
+| `utils` | `xdv_environment.py` | Localizar a raiz do projeto (`pyproject.toml`) |
+| `utils` | `xds_memory.py` | Conversão e utilitários de memória |
+| `environment` | `xdv_localhost.py` | Estrutura de pastas para runs locais |
+| `lists` | `xdv_sorting.py` | Algoritmos de ordenação e knapsack (estudo) |
+
 ## Configuração do ambiente
 
 Este projeto usa **[uv](https://docs.astral.sh/uv/)** para ambientes e dependencias.
@@ -105,7 +118,7 @@ Commits seguem **[Conventional Commits](https://www.conventionalcommits.org/)** 
 ```bash
 git add .
 uv run cz commit
-git push
+git push # sem publicacao de nova versao
 ```
 
 | Tipo | Quando usar | Bump |
@@ -117,29 +130,15 @@ git push
 | `test` | Testes | — |
 | `chore` | Manutencao | — |
 
+
 ### Release e publicacao
 
 ```bash
 uv run cz bump          # bump de versao + CHANGELOG + tag
 uv build                # gera dist/*.whl
-uv publish              # publica no PyPI (quando configurado)
-```
-
-Na primeira release (sem tags Git), use `--yes`:
-
-```bash
-uv run cz bump --yes
+uv run --with xploredev --no-project -- python -c "import xploredev"  # testar artefato
+uv run --env-file .env --no-project -- uv publish              # publica no PyPI (quando configurado)
+git push && git push --tags
 ```
 
 
-
-### Módulos da biblioteca (`src/xploredev/`)
-
-| Pacote | Arquivo | Responsabilidade |
-|--------|---------|------------------|
-| `io` | `xdv_file.py` | Pastas, JSON e persistência de `pandas` (Parquet, etc.) |
-| `log` | `xdv_log.py` | Logging estruturado e perfil de ambiente em execuções |
-| `utils` | `xdv_environment.py` | Localizar a raiz do projeto (`pyproject.toml`) |
-| `utils` | `xds_memory.py` | Conversão e utilitários de memória |
-| `environment` | `xdv_localhost.py` | Estrutura de pastas para runs locais |
-| `lists` | `sorting.py` | Algoritmos de ordenação e knapsack (estudo) |
