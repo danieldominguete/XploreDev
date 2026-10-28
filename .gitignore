@@ -107,4 +107,4 @@ venv.bak/
 .ropeproject
 
 # Working files
-output
+output/
