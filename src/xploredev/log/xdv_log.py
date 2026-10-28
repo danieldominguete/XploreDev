@@ -18,12 +18,12 @@ from typing import Any, Final
 
 import psutil
 
-from xploreds.io.xds_file import create_folder
-from xploreds.utils.xds_memory import convert_bytes
+from xploredev.io.xdv_file import create_folder
+from xploredev.utils.xdv_memory import convert_bytes
 
 PathLike = str | Path
 
-_LOGGER_NAME: Final = "xploreds"
+_LOGGER_NAME: Final = "xploredev"
 _LOG_FORMAT: Final = "%(asctime)s - %(levelname)s - %(message)s"
 _LOG_DATE_FORMAT: Final = "%d-%m-%Y %H:%M:%S"
 _RUN_TIMESTAMP_FORMAT: Final = "%y%m%d%H%M%S"
@@ -52,7 +52,7 @@ def _log_bordered(logger: logging.Logger, message: str, separator: str) -> None:
     logger.info(separator)
 
 
-class XploreDSLogging:
+class XploreDevLogging:
     """
     Configure and write structured logs for a single script execution.
 
@@ -139,7 +139,7 @@ class XploreDSLogging:
         self.logger.info("Conclusion at %s", ended_at.strftime("%Y-%m-%d %H:%M"))
         self.logger.info("Execution time: %.2f hours", exec_hours)
         self.logger.info(_SEPARATOR_TITLE)
-        self.logger.info("%74sXploreDS", "")
+        self.logger.info("%74sXploreDev", "")
         self.logger.info(_SEPARATOR_TITLE)
 
     def log_environment_setup(self) -> None:
@@ -194,18 +194,18 @@ class XploreDSLogging:
         self.logger.info("Artifacts folder: %s", self.log_path)
 
 
-def create_logger(project_root: PathLike, script_path: PathLike) -> XploreDSLogging:
+def create_logger(project_root: PathLike, script_path: PathLike) -> XploreDevLogging:
     """
     Create the run logger for the current script.
 
     Args:
-        project_root: Root directory of the XploreDS project.
+        project_root: Root directory of the XploreDev project.
         script_path: Path to the script file being executed.
 
     Returns:
-        Configured ``XploreDSLogging`` instance.
+        Configured ``XploreDevLogging`` instance.
     """
-    return XploreDSLogging(
+    return XploreDevLogging(
         project_root=project_root,
         script_name=script_path,
     )
