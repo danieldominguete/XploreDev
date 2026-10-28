@@ -100,102 +100,36 @@ uv run python cookbook/sorting/test_sorting.py
 
 Commits seguem **[Conventional Commits](https://www.conventionalcommits.org/)** via [Commitizen](https://commitizen-tools.github.io/commitizen/). A versão do pacote vive em `pyproject.toml` (`[project].version`); o `cz bump` atualiza essa versão, o `CHANGELOG.md` e cria a tag Git `vX.Y.Z`.
 
-### Configuração única (por clone)
-
-Com o ambiente já sincronizado **incluindo dependências de desenvolvimento**:
+### Commits & Push
 
 ```bash
 git add .
 uv run cz commit
+git push
 ```
 
-O hook `commit-msg` valida mensagens quando você usa `git commit -m "..."` diretamente. O fluxo recomendado continua sendo `uv run cz commit`, que já guia o formato correto.
+| Tipo | Quando usar | Bump |
+|------|-------------|------|
+| `feat` | Nova funcionalidade | minor |
+| `fix` | Correcao de bug | patch |
+| `docs` | Documentacao | — |
+| `refactor` | Refatoracao | patch |
+| `test` | Testes | — |
+| `chore` | Manutencao | — |
 
-### Passo a passo: do código ao commit
-
-1. **Desenvolver** e revisar o diff (`git status`, `git diff`).
-2. **Adicionar** apenas o que entra naquele commit lógico:
-
-   ```bash
-   git add caminho/do/arquivo
-   ```
-
-3. **Registrar o commit** com o assistente interativo:
-
-   ```bash
-   uv run cz commit
-   ```
-
-   Escolha o **tipo**, o **escopo** (opcional) e a **descrição** em imperativo (ex.: `feat(io): add parquet export helper`).
-
-4. **Repetir** os passos 1–3 até a branch estar pronta para release ou merge.
-
-| Tipo | Quando usar | Efeito no `cz bump` (versão 0.x) |
-|------|-------------|----------------------------------|
-| `feat` | Nova funcionalidade na biblioteca | **minor** (ex.: 0.1.0 → 0.2.0) |
-| `fix` | Correção de bug | **patch** (ex.: 0.1.0 → 0.1.1) |
-| `refactor` | Refatoração sem mudar comportamento externo | **patch** |
-| `perf` | Melhoria de desempenho | **patch** |
-| `docs` | Só documentação | sem bump automático típico* |
-| `test` | Só testes | sem bump automático típico* |
-| `chore` | Manutenção (deps, CI, etc.) | sem bump automático típico* |
-| `BREAKING CHANGE` no corpo ou `!` após o tipo | Mudança incompatível | **major** quando sair de 0.x ou em 1.x+ |
-
-\*Commits só `docs`/`test`/`chore` não costumam justificar release sozinhos; acumule com `feat`/`fix` ou faça bump manual se necessário.
-
-### Passo a passo: gerar nova versão do pacote
-
-1. **Garantir** que `main` (ou sua branch de release) está limpa, com commits no formato Conventional Commits e CI verde, se houver.
-2. **Gerar versão, CHANGELOG e tag**:
-
-   ```bash
-   uv run cz bump
-   ```
-
-   Na **primeira tag** do repositório (ainda sem tags Git), confirme sem prompt extra:
-
-   ```bash
-   uv run cz bump --yes
-   ```
-
-3. **Conferir** o que mudou:
-
-   ```bash
-   git show HEAD
-   cat CHANGELOG.md
-   grep '^version' pyproject.toml   # ou a linha version em [project]
-   ```
-
-4. **Publicar artefatos** (quando for liberar no PyPI ou registry interno):
-
-   ```bash
-   uv build
-   uv publish   # credenciais configuradas (token PyPI, etc.)
-   ```
-
-5. **Enviar** commit de bump e tag para o remoto:
-
-   ```bash
-   git push
-   git push --tags
-   ```
-
-Resumo do fluxo:
-
-```
-alterações → git add → uv run cz commit → (várias vezes) → uv run cz bump → uv build → uv publish → git push --tags
-```
-
-Versão atual do pacote: **0.1.0** (`pyproject.toml`).
-
-## Build e publicação (referência rápida)
+### Release e publicacao
 
 ```bash
-uv build
-uv publish
+uv run cz bump          # bump de versao + CHANGELOG + tag
+uv build                # gera dist/*.whl
+uv publish              # publica no PyPI (quando configurado)
 ```
 
-Use após o `cz bump`, quando a nova versão já estiver taggeada e validada.
+Na primeira release (sem tags Git), use `--yes`:
+
+```bash
+uv run cz bump --yes
+```
 
 
 
